@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { DollarSign, LogOut, User, Settings, Sun, Moon } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
-import { Input } from './components/ui/input';
-import { Label } from './components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
-import { Textarea } from './components/ui/textarea';
-import { Badge } from './components/ui/badge';
-import { Alert, AlertDescription } from './components/ui/alert';
-import { Progress } from './components/ui/progress';
+
 import { AuthComponent } from './components/auth-component';
 import { Dashboard } from './components/dashboard';
 import { TransactionForm } from './components/transaction-form';
 import { TransactionList } from './components/transaction-list';
 import { SecurityComponent } from './components/security-component';
 import { FinanceCharts } from './components/finance-charts';
-import { DollarSign, LogOut, User, Settings, Sun, Moon } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
 
+// Tipos
 export type Transaction = {
   id: string;
   type: 'income' | 'expense';
@@ -47,6 +42,7 @@ export type SecurityLog = {
   status: 'success' | 'failed' | 'blocked';
 };
 
+// Categorias fixas
 const CATEGORIES = [
   'Alimentação',
   'Transporte',
@@ -66,7 +62,7 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([]);  
+  const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Gerenciar tema
@@ -79,8 +75,8 @@ function App() {
   }, [isDarkMode]);
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    toast.success(isDarkMode ? 'Tema claro ativado!' : 'Tema escuro ativado!');
+    setIsDarkMode(prev => !prev);
+    toast.success(!isDarkMode ? 'Tema escuro ativado!' : 'Tema claro ativado!');
   };
 
   const handleUpdateUser = (updatedUser: User) => {
@@ -88,52 +84,18 @@ function App() {
     toast.success('Perfil atualizado com sucesso!');
   };
 
-  // Simular dados iniciais
+  // Mock inicial quando usuário faz login
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Simulação de transações iniciais
       const mockTransactions: Transaction[] = [
-        {
-          id: '1',
-          type: 'income',
-          amount: 5000,
-          description: 'Salário',
-          category: 'Salário',
-          date: '2025-01-01',
-          tags: ['mensal', 'trabalho']
-        },
-        {
-          id: '2',
-          type: 'expense',
-          amount: 1200,
-          description: 'Aluguel',
-          category: 'Moradia',
-          date: '2025-01-02',
-          tags: ['mensal', 'fixo']
-        },
-        {
-          id: '3',
-          type: 'expense',
-          amount: 350,
-          description: 'Mercado',
-          category: 'Alimentação',
-          date: '2025-01-03',
-          tags: ['semanal']
-        },
-        {
-          id: '4',
-          type: 'income',
-          amount: 800,
-          description: 'Freelance Design',
-          category: 'Freelance',
-          date: '2025-01-04',
-          tags: ['extra']
-        }
+        { id: '1', type: 'income', amount: 5000, description: 'Salário', category: 'Salário', date: '2025-01-01', tags: ['mensal', 'trabalho'] },
+        { id: '2', type: 'expense', amount: 1200, description: 'Aluguel', category: 'Moradia', date: '2025-01-02', tags: ['mensal', 'fixo'] },
+        { id: '3', type: 'expense', amount: 350, description: 'Mercado', category: 'Alimentação', date: '2025-01-03', tags: ['semanal'] },
+        { id: '4', type: 'income', amount: 800, description: 'Freelance Design', category: 'Freelance', date: '2025-01-04', tags: ['extra'] }
       ];
       setTransactions(mockTransactions);
 
-      // Simulação de logs de segurança
-      const mockSecurityLogs: SecurityLog[] = [
+      const mockLogs: SecurityLog[] = [
         {
           id: '1',
           action: 'Login',
@@ -151,15 +113,15 @@ function App() {
           status: 'blocked'
         }
       ];
-      setSecurityLogs(mockSecurityLogs);
+      setSecurityLogs(mockLogs);
     }
   }, [isAuthenticated, user]);
 
+  // Login simulado
   const handleLogin = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
-    
-    // Log de segurança
+
     const newLog: SecurityLog = {
       id: Date.now().toString(),
       action: 'Login',
@@ -169,12 +131,10 @@ function App() {
       status: 'success'
     };
     setSecurityLogs(prev => [newLog, ...prev]);
-    
     toast.success('Login realizado com sucesso!');
   };
 
   const handleLogout = () => {
-    // Log de segurança
     const newLog: SecurityLog = {
       id: Date.now().toString(),
       action: 'Logout',
@@ -184,7 +144,6 @@ function App() {
       status: 'success'
     };
     setSecurityLogs(prev => [newLog, ...prev]);
-    
     setUser(null);
     setIsAuthenticated(false);
     setTransactions([]);
@@ -193,8 +152,7 @@ function App() {
 
   const handleAddTransaction = (newTransaction: Transaction) => {
     setTransactions(prev => [newTransaction, ...prev]);
-    
-    // Log de segurança
+
     const newLog: SecurityLog = {
       id: Date.now().toString(),
       action: `Nova Transação: ${newTransaction.type}`,
@@ -204,14 +162,13 @@ function App() {
       status: 'success'
     };
     setSecurityLogs(prev => [newLog, ...prev]);
-    
+
     toast.success('Transação adicionada com sucesso!');
   };
 
   const handleDeleteTransaction = (id: string) => {
     setTransactions(prev => prev.filter(t => t.id !== id));
-    
-    // Log de segurança
+
     const newLog: SecurityLog = {
       id: Date.now().toString(),
       action: 'Transação Removida',
@@ -221,47 +178,35 @@ function App() {
       status: 'success'
     };
     setSecurityLogs(prev => [newLog, ...prev]);
-    
     toast.success('Transação removida com sucesso!');
   };
 
-  if (!isAuthenticated) {
-    return <AuthComponent onLogin={handleLogin} />;
-  }
+  // Autenticação
+  if (!isAuthenticated) return <AuthComponent onLogin={handleLogin} />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-blue-600" />
-              <h1 className="text-xl text-gray-900">FinanceControl</h1>
+              <DollarSign className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-xl font-semibold">FinanceControl</h1>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                 <User className="h-5 w-5" />
                 <span>{user?.name}</span>
               </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleTheme}
-                className="gap-2"
-              >
+
+              <Button variant="outline" size="sm" onClick={toggleTheme} className="gap-2">
                 {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 {isDarkMode ? 'Claro' : 'Escuro'}
               </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="gap-2"
-              >
+
+              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                 <LogOut className="h-4 w-4" />
                 Sair
               </Button>
@@ -270,7 +215,7 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Conteúdo */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <TabsList className="grid w-full grid-cols-5">
@@ -282,42 +227,23 @@ function App() {
           </TabsList>
 
           <TabsContent value="dashboard">
-            <Dashboard 
-              transactions={transactions} 
-              user={user!}
-              categories={CATEGORIES}
-            />
+            <Dashboard transactions={transactions} user={user!} categories={CATEGORIES} />
           </TabsContent>
 
           <TabsContent value="transactions">
-            <TransactionList 
-              transactions={transactions}
-              onDeleteTransaction={handleDeleteTransaction}
-              categories={CATEGORIES}
-            />
+            <TransactionList transactions={transactions} onDeleteTransaction={handleDeleteTransaction} categories={CATEGORIES} />
           </TabsContent>
 
           <TabsContent value="add-transaction">
-            <TransactionForm 
-              onAddTransaction={handleAddTransaction}
-              categories={CATEGORIES}
-            />
+            <TransactionForm onAddTransaction={handleAddTransaction} categories={CATEGORIES} />
           </TabsContent>
 
           <TabsContent value="charts">
-            <FinanceCharts 
-              transactions={transactions}
-              categories={CATEGORIES}
-            />
+            <FinanceCharts transactions={transactions} categories={CATEGORIES} />
           </TabsContent>
 
           <TabsContent value="security">
-            <SecurityComponent 
-              securityLogs={securityLogs}
-              user={user!}
-              transactions={transactions}
-              onUpdateUser={handleUpdateUser}
-            />
+            <SecurityComponent securityLogs={securityLogs} user={user!} transactions={transactions} onUpdateUser={handleUpdateUser} />
           </TabsContent>
         </Tabs>
       </main>
